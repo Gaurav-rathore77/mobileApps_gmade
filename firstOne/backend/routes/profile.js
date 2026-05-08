@@ -7,16 +7,22 @@ const auth = require('../middleware/auth');
 router.put('/image', auth, async (req, res) => {
   try {
     const { imageUrl } = req.body;
-    const userId = req.user.userId; // Use userId from JWT token
+    // Get userId from authenticated token
+    const targetUserId = req.user.userId || req.user.id || req.user._id;
+
+    console.log('🔍 Full req.user object:', req.user);
+    console.log('🔍 Extracted userId:', targetUserId);
 
     if (!imageUrl) {
       return res.status(400).json({ error: 'Image URL is required' });
     }
 
+    console.log('🔍 Updating profile image for user:', targetUserId);
+
     const updatedUser = await User.findByIdAndUpdate(
-      userId,
+      targetUserId,
       { profileImage: imageUrl },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     if (!updatedUser) {
@@ -43,7 +49,8 @@ router.put('/image', auth, async (req, res) => {
 router.put('/email', auth, async (req, res) => {
   try {
     const { email } = req.body;
-    const userId = req.user.userId; // Use userId from JWT token
+    // Get userId from authenticated token
+    const targetUserId = req.user.userId || req.user.id || req.user._id;
 
     if (!email) {
       return res.status(400).json({ error: 'Email is required' });
@@ -55,10 +62,12 @@ router.put('/email', auth, async (req, res) => {
       return res.status(400).json({ error: 'Invalid email format' });
     }
 
+    console.log('🔍 Updating email for user:', targetUserId);
+
     const updatedUser = await User.findByIdAndUpdate(
-      userId,
+      targetUserId,
       { email: email },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     if (!updatedUser) {
@@ -84,7 +93,12 @@ router.put('/email', auth, async (req, res) => {
 // Get current user profile
 router.get('/me', auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select('-password'); // Use userId from JWT token
+    // Get userId from authenticated token
+    const targetUserId = req.user.userId || req.user.id || req.user._id;
+    
+    console.log('🔍 Fetching profile for user:', targetUserId);
+    
+    const user = await User.findById(targetUserId).select('-password');
     
     if (!user) {
       return res.status(404).json({ error: 'User not found' });

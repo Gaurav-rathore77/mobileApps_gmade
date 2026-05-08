@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from 'react';
-import { productService, Product } from '../api/productService';
+import productService, { Product } from '../api/productService';
 import { useUserStore } from '../app/store/user.native';
 import { useProductStore } from '../store/productStore';
 

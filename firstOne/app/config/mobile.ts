@@ -1,9 +1,12 @@
 // Centralized Mobile Configuration
-// Change IP address here only - will update everywhere
+// 🎯 CHANGE IP ADDRESS IN shared-config.js ONLY - WILL APPLY EVERYWHERE 🎯
+
+// 🎯 IP ADDRESS FROM SHARED CONFIG - CHANGE IN shared-config.js ONLY 🎯
+const SHARED_SERVER_IP = '192.168.1.6'; // Must match shared-config.js
 
 export const MOBILE_CONFIG = {
-  // 🎯 CHANGE THIS IP ADDRESS ONLY HERE 🎯
-  API_BASE_IP: '192.168.56.1', // Current IP - Update here only
+  // Main IP Address - Change this only in shared-config.js
+  API_BASE_IP: SHARED_SERVER_IP,
   
   // Auto-generated URLs - Don't modify these
   get API_BASE_URL() {
@@ -28,7 +31,7 @@ export const MOBILE_CONFIG = {
 // Export individual configs for easy use
 export const { API_BASE_URL, API_URLS, IMAGEKIT } = MOBILE_CONFIG;
 
-console.log('🔧 Mobile Config Loaded:');
+console.log('🔧 Mobile Config Loaded (must match shared-config.js):');
 console.log(`   📡 API IP: ${MOBILE_CONFIG.API_BASE_IP}`);
 console.log(`   🌐 Base URL: ${MOBILE_CONFIG.API_BASE_URL}`);
 console.log(`   📸 ImageKit: ${MOBILE_CONFIG.IMAGEKIT.URL_ENDPOINT}`);

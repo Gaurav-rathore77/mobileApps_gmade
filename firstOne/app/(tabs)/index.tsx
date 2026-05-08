@@ -1,7 +1,8 @@
-import { Text, Pressable, View, ScrollView, Modal, Image } from "react-native";
+import { Text, Pressable, View, ScrollView, Modal, Image, SafeAreaView, StatusBar } from "react-native";
 import { useRouter } from "expo-router";
 import { useUserStore } from "../store/user";
 import { useState } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function Sidebar({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const router = useRouter();
@@ -75,7 +76,7 @@ function Sidebar({ visible, onClose }: { visible: boolean; onClose: () => void }
 
           <ScrollView className="flex-1">
             {navItem("Home", "/", "")}
-            {navItem("Products", "/product" as any,"")}
+            {navItem("Products", "/(stack)/product" as any,"")}
             {navItem("About", "/about" as any, "")}
             
             {user && (
@@ -126,9 +127,11 @@ export default function HomeTab() {
   const user = useUserStore((s) => s.user);
   const logout = useUserStore((s) => s.logout);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const insets = useSafeAreaInsets();
 
   return (
-    <View className="flex-1 bg-gray-100">
+    <SafeAreaView className="flex-1 bg-gray-100" style={{ paddingTop: insets.top }}>
+      <StatusBar barStyle="light-content" backgroundColor="#2563eb" />
       <Sidebar visible={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
       {/* Header with Hamburger */}
@@ -184,7 +187,7 @@ export default function HomeTab() {
           </Text>
           <Pressable
               className="bg-purple-500 px-4 py-3 rounded-lg w-full mb-3"
-              onPress={() => router.push("/product" as any)}
+              onPress={() => router.push("/(stack)/product" as any)}
             >
               <Text className="text-white text-center font-semibold">View All Products</Text>
             </Pressable>
@@ -229,6 +232,6 @@ export default function HomeTab() {
             </Pressable>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }

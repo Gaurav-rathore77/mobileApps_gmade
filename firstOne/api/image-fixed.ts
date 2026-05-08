@@ -1,5 +1,5 @@
 import ImageKit from "imagekit-javascript";
-import { IP_ADDRESS, getApiUrl } from "../app/config/ip";
+import { API_URLS } from "../app/config/mobile";
 
 const imagekit = new ImageKit({
   publicKey: "public_XiBBoC8s7KdL/fXGGeOUMxAl8cU=",
@@ -12,12 +12,11 @@ export const uploadImageFromUriFixed = async (uri: string, fileName: string, fol
     let authResponse;
     let authParams;
     
-    // Try different URLs in order of preference using centralized IP
+    // Try different URLs in order of preference using mobile config
     const urls = [
-      getApiUrl(),                 
-      `http://${IP_ADDRESS}:3000`, 
+      ...API_URLS,
       'http://localhost:3000',     
-      'http://127.0.0.1:3000'     
+      'http://192.168.1.8:3000'     
     ];
     
     for (const url of urls) {

@@ -31,7 +31,7 @@ export default function MediaRecorder() {
   
   const router = useRouter();
   const audioRecorderRef = useRef<Audio.Recording | null>(null);
-  const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const recordingTimerRef = useRef<number | null>(null);
   const playbackSoundRef = useRef<Audio.Sound | null>(null);
 
   useEffect(() => {
@@ -80,7 +80,7 @@ export default function MediaRecorder() {
       // Start timer
       recordingTimerRef.current = setInterval(() => {
         setRecordingDuration(prev => prev + 1);
-      }, 1000) as any;
+      }, 1000);
 
       console.log('✅ Audio recording started');
     } catch (error) {
@@ -117,7 +117,7 @@ export default function MediaRecorder() {
         // Simulate recording timer
         recordingTimerRef.current = setInterval(() => {
           setRecordingDuration(prev => prev + 1);
-        }, 1000) as NodeJS.Timeout;
+        }, 1000);
 
         console.log('✅ Video recording started');
       }

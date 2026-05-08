@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, Alert, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, Image, Alert, ScrollView, SafeAreaView, StatusBar } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from "expo-router";
 import { useState, useEffect } from "react";
@@ -9,13 +9,14 @@ import { loginApi } from "../../api/auth";
 import { uploadImageFromUriFixed } from "../../api/image-fixed";
 import { getWorkingProfileImage, getAlternativeImageUrl, forceRefreshImageUrl, getOriginalImageUrl } from "../utils/profileImages";
 import { getProxyImageUrl } from "../../api/image-proxy";
-import { API_BASE_URL } from "../config/mobile";
-import { IP_ADDRESS, getApiUrl } from "../config/ip";
+import { API_URLS } from "../config/mobile";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Profile() {
     const user = useUserStore((s) => s.user);
     const logout = useUserStore((s) => s.logout);
     const updateUser = useUserStore((s) => s.updateUser);
+    const insets = useSafeAreaInsets();
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
     const [username, setUsername] = useState("");
@@ -102,7 +103,7 @@ export default function Profile() {
         // Test network connectivity first
         console.log('🌐 Testing network connectivity...');
         try {
-            const testResponse = await fetch(getApiUrl('/'), {
+            const testResponse = await fetch(`${API_URLS[0]}/`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -117,13 +118,8 @@ export default function Profile() {
         
         if (imageUrl) {
             try {
-                // Try multiple URLs for profile update using centralized IP
-                const profileUrls = [
-                    getApiUrl('/profile/image'),        // Use centralized IP first
-                    `http://${IP_ADDRESS}:3000/profile/image`, // Direct IP reference
-                    'http://localhost:3000/profile/image',
-                    'http://127.0.0.1:3000/profile/image'
-                ];
+                // Use centralized config URLs for profile update
+                const profileUrls = API_URLS.map(url => `${url}/profile/image`);
                 
                 const token = useUserStore.getState().token;
                 let lastError: Error | null = null;
@@ -185,17 +181,22 @@ export default function Profile() {
 
     if (!user) {
         return (
-            <View className="flex-1 bg-white justify-center items-center p-4">
-                <Text className="text-lg text-gray-600 mb-4">Please login to view profile</Text>
-                <Button onPress={() => router.replace("/login" as any)}>Go to Login</Button>
-            </View>
+            <SafeAreaView className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
+                <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+                <View className="flex-1 justify-center items-center p-4">
+                    <Text className="text-lg text-gray-600 mb-4">Please login to view profile</Text>
+                    <Button onPress={() => router.replace("/login" as any)}>Go to Login</Button>
+                </View>
+            </SafeAreaView>
         );
     }
 
     return (
-        <ScrollView className="flex-1 bg-white">
-            {/* Header */}
-            <View className="flex-row items-center justify-between p-4 bg-blue-600">
+        <SafeAreaView className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
+            <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+            <ScrollView className="flex-1">
+                {/* Header */}
+                <View className="flex-row items-center justify-between p-4 bg-blue-600">
                 <Button onPress={handleBack}>Go to Home</Button>
                 <Text className="text-xl font-bold text-white">Profile</Text>
                 <View style={{ width: 80 }} />
@@ -364,6 +365,7 @@ export default function Profile() {
                     </TouchableOpacity>
                 </View>
             </View>
-        </ScrollView>
+            </ScrollView>
+        </SafeAreaView>
     );
 }

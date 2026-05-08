@@ -46,7 +46,7 @@ router.post('/upload-audio', upload.single('audio'), (req, res) => {
     const recording = {
       id: 'audio_' + Date.now(),
       type: 'audio',
-      url: `http://192.168.1.3:3000/uploads/${req.file.filename}`,
+      url: `http://${req.hostname || '192.168.1.8'}:3000/uploads/${req.file.filename}`,
       duration: parseInt(duration) || 0,
       transcript: transcript || null,
       timestamp: timestamp || new Date().toISOString(),
@@ -82,6 +82,53 @@ router.post('/upload-audio', upload.single('audio'), (req, res) => {
   }
 });
 
+// Profile image upload
+router.post('/upload-profile-image', upload.single('image'), (req, res) => {
+  try {
+    console.log('👤 Profile image upload request received');
+    
+    if (!req.file) {
+      console.log('❌ No file found');
+      return res.status(400).json({ error: 'No image file provided' });
+    }
+
+    const { userId } = req.body;
+    
+    // Create image object
+    const imageRecord = {
+      id: 'profile_' + Date.now(),
+      type: 'profile-image',
+      url: `http://${req.hostname || '192.168.1.8'}:3000/uploads/${req.file.filename}`,
+      userId: userId || 'demo_user',
+      timestamp: new Date().toISOString(),
+      metadata: {
+        size: req.file.size,
+        format: 'image',
+        originalName: req.file.originalname
+      }
+    };
+
+    console.log('✅ Profile image saved:', imageRecord);
+    
+    return res.json({
+      success: true,
+      id: imageRecord.id,
+      url: imageRecord.url,
+      type: 'profile-image',
+      timestamp: imageRecord.timestamp,
+      metadata: imageRecord.metadata
+    });
+
+  } catch (error) {
+    console.error('❌ Profile image upload error:', error);
+    return res.status(500).json({ 
+      success: false,
+      error: 'Failed to upload profile image',
+      details: error.message 
+    });
+  }
+});
+
 // Simple video upload
 router.post('/upload-video', upload.single('video'), (req, res) => {
   try {
@@ -98,7 +145,7 @@ router.post('/upload-video', upload.single('video'), (req, res) => {
     const recording = {
       id: 'video_' + Date.now(),
       type: 'video',
-      url: `http://192.168.1.3:3000/uploads/${req.file.filename}`,
+      url: `http://${req.hostname || '192.168.1.8'}:3000/uploads/${req.file.filename}`,
       duration: parseInt(duration) || 0,
       transcript: transcript || null,
       timestamp: timestamp || new Date().toISOString(),

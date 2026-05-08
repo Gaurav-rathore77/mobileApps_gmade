@@ -25,8 +25,7 @@ interface ProductStore {
 }
 
 export const useProductStore = create<ProductStore>()(
-    persist(
-        (set, get) => ({
+    (set, get) => ({
             // Initial state
             products: [],
             loading: false,
@@ -81,13 +80,5 @@ export const useProductStore = create<ProductStore>()(
                 if (!lastFetch) return true;
                 return Date.now() - lastFetch > maxAge;
             }
-        }),
-        {
-            name: 'product-store',
-            partialize: (state) => ({
-                products: state.products,
-                lastFetch: state.lastFetch
-            })
-        }
-    )
+        })
 );

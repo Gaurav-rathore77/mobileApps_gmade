@@ -1,14 +1,16 @@
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, SafeAreaView, StatusBar } from "react-native";
 import { useRouter } from "expo-router";
 import * as LocalAuthentication from "expo-local-authentication";
-import { useUserStore } from "../store/user";
+import { useUserStore } from "../store/user.native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
-    
+    const insets = useSafeAreaInsets();
+
     // Use store
     const userStore = useUserStore();
     const login = userStore.login;
@@ -52,30 +54,16 @@ export default function Login() {
             if (result.success) {
                 // Direct login with fingerprint - no credentials needed
                 if (typeof fingerprintLogin === 'function') {
-                    fingerprintLogin();
-                    Alert.alert("Success", "Successfully logged in with fingerprint!");
-                    router.replace("/");
+                    try {
+                        await fingerprintLogin();
+                        Alert.alert("Success", "Successfully logged in with fingerprint!");
+                        router.replace("/");
+                    } catch (error) {
+                        console.error("Fingerprint login error:", error);
+                        Alert.alert("Error", "Failed to login with fingerprint");
+                    }
                 } else {
-                    // Fallback - create mock user manually
-                    const mockUser = {
-                        id: "fingerprint_user",
-                        username: "Fingerprint User",
-                        email: "user@fingerprint.com",
-                        profileImage: undefined
-                    };
-                    
-                    const mockToken = "fingerprint_token_" + Date.now();
-                    
-                    // Direct state update
-                    useUserStore.setState({
-                        user: mockUser,
-                        token: mockToken,
-                        isLoading: false,
-                        error: null
-                    });
-                    
-                    Alert.alert("Success", "Successfully logged in with fingerprint!");
-                    router.replace("/");
+                    Alert.alert("Error", "Fingerprint login not available");
                 }
             } else {
                 Alert.alert("Error", "Fingerprint authentication failed");
@@ -98,8 +86,10 @@ export default function Login() {
     };
     
     return (
-        <View className="flex-1 bg-blue-600 justify-center px-6">
-            <View className="bg-white rounded-xl p-6 shadow-lg">
+        <SafeAreaView className="flex-1 bg-blue-600" style={{ paddingTop: insets.top }}>
+            <StatusBar barStyle="light-content" backgroundColor="#2563eb" />
+            <View className="flex-1 justify-center px-6">
+                <View className="bg-white rounded-xl p-6 shadow-lg">
                 <Text className="text-2xl font-bold text-blue-700 text-center mb-6">Login</Text>
                 
                 {error && (
@@ -139,7 +129,7 @@ export default function Login() {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    onPress={() => router.push('/auth/register' as any)}
+                    onPress={() => router.push('/register' as any)}
                     className="mt-4"
                 >
                     <Text className="text-blue-600 text-center text-sm">Don't have an account? Register</Text>
@@ -178,6 +168,7 @@ export default function Login() {
                     </TouchableOpacity>
                 </View>
             </View>
-        </View>
+            </View>
+        </SafeAreaView>
     );
 }
