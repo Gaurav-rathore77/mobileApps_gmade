@@ -13,6 +13,7 @@ const profileRoutes = require("./routes/profile");
 const proxyRoutes = require("./routes/proxy");
 const mediaRoutes = require("./routes/media-simple");
 const notificationRoutes = require("./routes/notification");
+const pdfRoutes = require("./routes/pdf");
 const imagekit = require("./config/image");
 
 dbConnect();
@@ -31,6 +32,7 @@ app.use("/profile", profileRoutes);
 app.use("/proxy", proxyRoutes);
 app.use("/media", mediaRoutes);
 app.use("/notification", notificationRoutes);
+app.use("/pdf", pdfRoutes);
 
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

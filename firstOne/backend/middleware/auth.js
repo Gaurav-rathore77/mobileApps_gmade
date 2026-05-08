@@ -2,10 +2,12 @@ const jwt = require("jsonwebtoken");
 
 const auth = (req, res, next) => {
     const authHeader = req.headers.authorization;
+    const JWT_SECRET = process.env.JWT_SECRET || "secret";
+    
     if (authHeader && authHeader.startsWith("Bearer ")) {
         const token = authHeader.substring(7);
         try {
-            const user = jwt.verify(token, "secret");
+            const user = jwt.verify(token, JWT_SECRET);
             console.log(' Token verified successfully:', user);
             req.user = user;
             next();

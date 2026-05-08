@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 // Email temporarily disabled to avoid authentication errors
 // const { sendWelcomeEmail, sendAdminNotification } = require("../config/email");
 
+const JWT_SECRET = process.env.JWT_SECRET || "secret";
+
 const register = async (req, res) => {
     try {
         const { username, email, password, profileImage } = req.body;
@@ -20,7 +22,7 @@ const register = async (req, res) => {
         await user.save();
         
         // Generate token for immediate login
-        const token = jwt.sign({ userId: user._id }, "secret", { expiresIn: "1h" });
+        const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: "1h" });
         
         res.json({ 
             token,
@@ -43,7 +45,7 @@ const login = async (req, res) => {
     if (user) {
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (isPasswordValid) {
-            const token = jwt.sign({ userId: user._id }, "secret", { expiresIn: "1h" });
+            const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: "1h" });
             
             res.json({ 
                 token,

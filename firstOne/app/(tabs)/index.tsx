@@ -77,6 +77,7 @@ function Sidebar({ visible, onClose }: { visible: boolean; onClose: () => void }
           <ScrollView className="flex-1">
             {navItem("Home", "/", "")}
             {navItem("Products", "/(stack)/product" as any,"")}
+            {navItem("PDF Analyzer", "/(stack)/pdf-analyzer" as any, "📄")}
             {navItem("About", "/about" as any, "")}
             
             {user && (
@@ -190,6 +191,22 @@ export default function HomeTab() {
               onPress={() => router.push("/(stack)/product" as any)}
             >
               <Text className="text-white text-center font-semibold">View All Products</Text>
+            </Pressable>
+        </View>
+
+        {/* PDF Analyzer Section */}
+        <View className="bg-white rounded-xl p-4 mb-4 shadow-sm">
+          <Text className="text-lg font-bold text-gray-800 mb-3 border-b border-gray-200 pb-2">
+            📄 PDF Analyzer
+          </Text>
+          <Text className="text-gray-600 mb-3">
+            Upload PDFs and ask questions about them using AI
+          </Text>
+          <Pressable
+              className="bg-indigo-600 px-4 py-3 rounded-lg w-full mb-3"
+              onPress={() => router.push("/(stack)/pdf-analyzer" as any)}
+            >
+              <Text className="text-white text-center font-semibold">Open PDF Analyzer</Text>
             </Pressable>
         </View>
 

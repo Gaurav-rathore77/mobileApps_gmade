@@ -14,6 +14,7 @@ export default function StackLayout() {
       <Stack.Screen name="admin-panel" />
       <Stack.Screen name="test-ip" />
       <Stack.Screen name="test-network" />
+      <Stack.Screen name="pdf-analyzer" />
     </Stack>
   );
 }
